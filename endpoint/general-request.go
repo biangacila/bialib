@@ -6,21 +6,21 @@ import (
 	"net/http"
 )
 
-func WsCrudRequest[t any](w http.ResponseWriter, r *http.Request, table string, hasPrefix bool, prefixCode string, prefixInitial int, prefixField string, outs []t, session *gocql.Session) {
+func WsCrudRequest[t any](w http.ResponseWriter, r *http.Request, dbName, table string, hasPrefix bool, prefixCode string, prefixInitial int, prefixField string, outs []t, session *gocql.Session) {
 	vars := mux.Vars(r)
 	action, _ := vars["action"]
 	if action == "list" {
-		WsGenericRequestPostList(w, r, session, table, outs)
+		WsGenericRequestPostList(w, r, session, dbName, table, outs)
 	} else if action == "insert" {
-		WsGenericRequestPostInsert(w, r, session, table, outs,
+		WsGenericRequestPostInsert(w, r, session, dbName, table, outs,
 			prefixField, prefixCode, prefixInitial, hasPrefix, false)
 	} else if action == "delete" {
-		WsGenericRequestPostDelete(w, r, session, table, outs)
+		WsGenericRequestPostDelete(w, r, session, dbName, table, outs)
 	} else if action == "find" {
-		WsGenericRequestPostFind(w, r, session, table, outs)
+		WsGenericRequestPostFind(w, r, session, dbName, table, outs)
 	} else if action == "search" {
-		WsGenericRequestPostSearch(w, r, session, table, outs)
+		WsGenericRequestPostSearch(w, r, session, dbName, table, outs)
 	} else if action == "update" {
-		WsGenericRequestPostUpdate(w, r, session, table, outs)
+		WsGenericRequestPostUpdate(w, r, session, dbName, table, outs)
 	}
 }

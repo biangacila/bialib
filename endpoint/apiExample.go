@@ -1,7 +1,7 @@
 package endpoint
 
 import (
-	"github.com/biangacila/bialib/domain"
+	"biacibenga.com/lib/go/bialib/domain"
 	"net/http"
 )
 

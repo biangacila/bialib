@@ -1,9 +1,9 @@
 package endpoint
 
 import (
+	"biacibenga.com/lib/go/bialib/dbcassandra"
 	"encoding/json"
 	"fmt"
-	"github.com/biangacila/bialib/dbcassandra"
 	"github.com/biangacila/luvungula-go/global"
 	"github.com/gocql/gocql"
 	"net/http"
@@ -81,7 +81,7 @@ func WsGenericRequestPostDelete[t any](w http.ResponseWriter, r *http.Request, s
 	my["RESULT"] = response
 	global.PublishToReact(w, r, my, 200)
 }
-func WsGenericRequestPostList[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, table string, outs []t) {
+func WsGenericRequestPostList[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, dbName, table string, outs []t) {
 	_, dataString := global.GetPostedDataMapAndString(r)
 	var o PostRequest
 	err := json.Unmarshal([]byte(dataString), &o)
@@ -89,7 +89,7 @@ func WsGenericRequestPostList[t any](w http.ResponseWriter, r *http.Request, ses
 		fmt.Println("Error WsGenericFetchDataList : ", err)
 	}
 	global.DisplayObject("validation", o)
-	results := dbcassandra.GenericDbRead2(session, o.DbName, table, o.AppName, o.Org, outs, o.Conditions)
+	results := dbcassandra.GenericDbRead2(session, dbName, table, dbName, o.Org, outs, o.Conditions)
 	var response PostResponse
 	response.Data = results
 	response.HasData = len(results) > 0
@@ -101,7 +101,7 @@ func WsGenericRequestPostList[t any](w http.ResponseWriter, r *http.Request, ses
 	my["RESULT"] = response
 	global.PublishToReact(w, r, my, 200)
 }
-func WsGenericRequestPostFind[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, table string, outs []t) {
+func WsGenericRequestPostFind[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, dbName, table string, outs []t) {
 	_, dataString := global.GetPostedDataMapAndString(r)
 	var o PostRequest
 	err := json.Unmarshal([]byte(dataString), &o)
@@ -109,7 +109,7 @@ func WsGenericRequestPostFind[t any](w http.ResponseWriter, r *http.Request, ses
 		fmt.Println("Error WsGenericRequestPostFind : ", err)
 	}
 
-	results, boo := dbcassandra.GenericDbFindRecord(session, o.DbName, table, o.AppName, o.Org, outs, o.Conditions)
+	results, boo := dbcassandra.GenericDbFindRecord(session, dbName, table, dbName, o.Org, outs, o.Conditions)
 	var response PostResponse
 	response.Data = results
 	response.HasData = boo
@@ -121,7 +121,7 @@ func WsGenericRequestPostFind[t any](w http.ResponseWriter, r *http.Request, ses
 	my["RESULT"] = response
 	global.PublishToReact(w, r, my, 200)
 }
-func WsGenericRequestPostSearch[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, table string, outs []t) {
+func WsGenericRequestPostSearch[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, dbName, table string, outs []t) {
 	_, dataString := global.GetPostedDataMapAndString(r)
 	var o PostRequest
 	err := json.Unmarshal([]byte(dataString), &o)
@@ -130,7 +130,7 @@ func WsGenericRequestPostSearch[t any](w http.ResponseWriter, r *http.Request, s
 	}
 
 	var searchKey = dbcassandra.ToString(o.Data)
-	results, boo := dbcassandra.GenericDbSearchRecords(session, o.DbName, table, o.AppName, o.Org, outs, searchKey)
+	results, boo := dbcassandra.GenericDbSearchRecords(session, dbName, table, dbName, o.Org, outs, searchKey)
 	var response PostResponse
 	response.Data = results
 	response.HasData = boo
@@ -142,14 +142,14 @@ func WsGenericRequestPostSearch[t any](w http.ResponseWriter, r *http.Request, s
 	my["RESULT"] = response
 	global.PublishToReact(w, r, my, 200)
 }
-func WsGenericRequestPostUpdate[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, table string, outs []t) {
+func WsGenericRequestPostUpdate[t any](w http.ResponseWriter, r *http.Request, session *gocql.Session, dbName, table string, outs []t) {
 	_, dataString := global.GetPostedDataMapAndString(r)
 	var o PostRequest
 	err := json.Unmarshal([]byte(dataString), &o)
 	if err != nil {
 		fmt.Println("Error WsGenericRequestPostSearch : ", err)
 	}
-	results := dbcassandra.GenericDbUpdate(session, o.DbName, table, o.AppName, o.Org, outs, o.ConditionFields, o.ConditionValues)
+	results := dbcassandra.GenericDbUpdate(session, dbName, table, dbName, o.Org, outs, o.ConditionFields, o.ConditionValues)
 	var response PostResponse
 	response.Data = results
 	response.HasData = len(results) > 0

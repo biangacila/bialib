@@ -1,8 +1,8 @@
 package endpoint
 
 import (
-	"github.com/biangacila/bialib/dbcassandra"
-	"github.com/biangacila/bialib/domain"
+	"biacibenga.com/lib/go/bialib/dbcassandra"
+	"biacibenga.com/lib/go/bialib/domain"
 	"net/http"
 )
 
