@@ -3,7 +3,13 @@ package pdfs
 import "testing"
 
 func TestServiceMergePdf_Run(t *testing.T) {
-	fileList := []string{"tax.pdf", "account-confirmation.pdf", "bank-statement.pdf", "proff-address.pdf"}
+	fileList := []string{
+		"./docs/ID-Certified.pdf",
+		"./docs/Proof-Qualification.pdf",
+		"./docs/proof-tax-number.pdf",
+		"./docs/csv.pdf",
+		"./docs/bank-account-confirmation.pdf",
+	}
 	outputFile := "out.pdf"
 	hub := ServiceMergePdf{
 		FileList:   fileList,
