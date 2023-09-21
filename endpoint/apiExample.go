@@ -1,9 +1,7 @@
 package endpoint
 
-import (
-	"biacibenga.com/lib/go/bialib/domain"
-	"net/http"
-)
+/*
+var session= dbcassandra.CreateConnectionWithAuth("voip.easipath.com")
 
 func WsCrudAccountsList(w http.ResponseWriter, r *http.Request) {
 	WsGenericRequestPostList(w, r, session, "Accounts", []domain.Accounts{})
@@ -21,3 +19,4 @@ func WsCrudAccountsFind(w http.ResponseWriter, r *http.Request) {
 func WsCrudAccountsSearch(w http.ResponseWriter, r *http.Request) {
 	WsGenericRequestPostFind(w, r, session, "Accounts", []domain.Accounts{})
 }
+*/

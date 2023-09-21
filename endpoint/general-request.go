@@ -12,10 +12,10 @@ func WsCrudRequest[t any](w http.ResponseWriter, r *http.Request, dbName, table 
 	if action == "list" {
 		WsGenericRequestPostList(w, r, session, dbName, table, outs)
 	} else if action == "insert" {
-		WsGenericRequestPostInsert(w, r, session, dbName, table, outs,
+		WsGenericRequestPostInsert(w, r, session, table, outs,
 			prefixField, prefixCode, prefixInitial, hasPrefix, false)
 	} else if action == "delete" {
-		WsGenericRequestPostDelete(w, r, session, dbName, table, outs)
+		WsGenericRequestPostDelete(w, r, session, table, outs)
 	} else if action == "find" {
 		WsGenericRequestPostFind(w, r, session, dbName, table, outs)
 	} else if action == "search" {
