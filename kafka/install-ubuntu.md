@@ -24,6 +24,8 @@ sudo apt install kafka-client
 
 ======== install kalka from docker-compose ===================
 
+docker network create kafkanetwork
+
 docker-compose up -d
 docker-compose ps
 docker-compose down

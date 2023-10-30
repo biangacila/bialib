@@ -10,7 +10,7 @@ func TestServiceMergePdf_Run(t *testing.T) {
 		"./docs/csv.pdf",
 		"./docs/bank-account-confirmation.pdf",
 	}
-	outputFile := "out.pdf"
+	outputFile := "SUPPORTING-DOCUMENTATION-REQUIRED.pdf"
 	hub := ServiceMergePdf{
 		FileList:   fileList,
 		OutputFile: outputFile,

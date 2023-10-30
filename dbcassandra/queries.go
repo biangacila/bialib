@@ -56,6 +56,10 @@ func RunQueryCass(session *gocql.Session, qry string, fack []string) (string, er
 func FetchEntityFromDbAll(session *gocql.Session, entity, dbName, appName string) []byte {
 	qry := fmt.Sprintf("select * from %v.%v where appname='%v'",
 		dbName, entity, appName)
+	if appName == "" {
+		qry = fmt.Sprintf("select * from %v.%v ",
+			dbName, entity)
+	}
 	res, _ := RunQueryCass2(session, qry)
 	return []byte(res)
 }

@@ -8,7 +8,7 @@ func TestServiceConnection1_Consumer(t *testing.T) {
 }
 func TestServiceConnection1_Prducer(t *testing.T) {
 	var hub ServiceConnection1
-	hub.Producer("EasiPath", `{"action":"testing me two!"}`)
+	hub.Producer("Biacibenga", `{"action":"welcome notice"}`)
 }
 
 //   N3M3NDk6

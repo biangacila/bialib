@@ -3,12 +3,71 @@ package dbcassandra
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/biangacila/luvungula-go/global"
 	"github.com/gocql/gocql"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
+func InsertBatchQueries(listQueries []string, server string, db string) {
+	defer global.RecoverMe("InsertBatchQueries")
+	const (
+		goroutines = 8
+	)
+	var rowsToInsert = len(listQueries)
+	cluster := gocql.NewCluster(server)
+	cluster.Keyspace = db
+	cluster.Consistency = gocql.Any
+	cluster.ConnectTimeout = time.Second * 10
+	session, err := cluster.CreateSession()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer session.Close()
+	in := make(chan *gocql.Batch, 0)
+	var wg sync.WaitGroup
+	for i := 0; i < goroutines; i++ {
+		go processBatches(session, in, &wg)
+	}
+	counter := 0
+	b := session.NewBatch(gocql.LoggedBatch)
+	for i := 0; i < rowsToInsert; i++ {
+		if i == (rowsToInsert - 1) { // Send in the last batch.
+			in <- b
+			break
+		}
+		counter++
+		qry := listQueries[i]
+		b.Query(qry)
+		if counter == 200 {
+			in <- b
+			b = gocql.NewBatch(gocql.LoggedBatch)
+			counter = 0
+		}
+	}
+	close(in)
+	wg.Wait()
+}
+func processBatches(s *gocql.Session, in chan *gocql.Batch, wg *sync.WaitGroup) {
+	defer global.RecoverMe("processBatches")
+	wg.Add(1)
+	for batch := range in {
+		for {
+			if err := s.ExecuteBatch(batch); err != nil {
+				log.Printf("Couldn't execute batch: %s", err)
+				continue // Keep trying on i/o error.
+			} else {
+				log.Println("Batch executed.")
+			}
+			break
+		}
+	}
+	wg.Done()
+}
 func BuildWhereQuery(inValues map[string]interface{}) string {
 	if len(inValues) == 0 {
 		return " "

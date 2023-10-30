@@ -7,8 +7,8 @@ import (
 	"log"
 )
 
-const KAFKA_HOST = "localhost" // "129.232.145.82"
-const KAFKA_PORT = "8083"
+const KAFKA_HOST = "voip.easipath.com" // "129.232.145.82"
+const KAFKA_PORT = "9092"
 
 type ServiceConnection1 struct {
 }
