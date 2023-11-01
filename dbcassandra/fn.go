@@ -28,7 +28,7 @@ func InsertBatchQueries(listQueries []string, server string, db string) {
 		log.Fatal(err)
 	}
 	defer session.Close()
-	in := make(chan *gocql.Batch, 0)
+	in := make(chan *gocql.Batch)
 	var wg sync.WaitGroup
 	for i := 0; i < goroutines; i++ {
 		go processBatches(session, in, &wg)
@@ -43,7 +43,7 @@ func InsertBatchQueries(listQueries []string, server string, db string) {
 		counter++
 		qry := listQueries[i]
 		b.Query(qry)
-		if counter == 200 {
+		if counter == 50 {
 			in <- b
 			b = gocql.NewBatch(gocql.LoggedBatch)
 			counter = 0

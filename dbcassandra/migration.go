@@ -25,7 +25,7 @@ type Migration struct {
 	connOrigin  *gocql.Session
 	connDest    *gocql.Session
 	qryDbCreate string
-	queries     []string
+	queries     map[string][]string
 }
 
 func (obj *Migration) Run() {
@@ -33,6 +33,7 @@ func (obj *Migration) Run() {
 	obj.tableCreateQuery = make(map[string]string)
 	obj.SystemSchemaKeyspaces = make(map[string]SystemSchemaKeyspaces)
 	obj.SystemSchemaColumns = make(map[string]map[string]map[string]SystemSchemaColumns)
+	obj.queries = make(map[string][]string)
 
 	obj.initialDbConn()
 	fmt.Println("1 (--> finish initialDbConn")
@@ -42,6 +43,7 @@ func (obj *Migration) Run() {
 	//todo get the table create query
 	obj.getTableCreateQuery()
 	fmt.Println("3 (--> finish getTableCreateQuery")
+	fmt.Println("total queries > ", len(obj.queries))
 	_ = obj.getSchemaInfoDatabase()
 	fmt.Println("4 (--> finish getSchemaInfoDatabase")
 
@@ -59,10 +61,16 @@ func (obj *Migration) Run() {
 
 }
 func (obj *Migration) insertDataIntoDestinationDb() {
-	InsertBatchQueries(obj.queries, obj.DestinationHost, obj.DestinationDatabase)
-	lastIndex := len(obj.queries) - 1
-	lastQry := obj.queries[lastIndex]
-	_, _ = RunQueryCass2(obj.connDest, lastQry)
+	y := 1
+	for table, queries := range obj.queries {
+		fmt.Println(y, "--(::::Inserting into| ", table, " | total: ", len(queries))
+		InsertBatchQueries(queries, obj.DestinationHost, obj.DestinationDatabase)
+		lastIndex := len(queries) - 1
+		lastQry := queries[lastIndex]
+		_, _ = RunQueryCass2(obj.connDest, lastQry)
+		y++
+	}
+
 }
 func (obj *Migration) FetchDataFromOrigin() {
 	var lat string
@@ -77,7 +85,7 @@ func (obj *Migration) FetchDataFromOrigin() {
 		for _, info := range ls {
 			str, _ := json.Marshal(info)
 			qry := fmt.Sprintf("insert into %v.%v  JSON '%v' ", obj.DestinationDatabase, table, string(str))
-			obj.queries = append(obj.queries, qry)
+			obj.queries[table] = append(obj.queries[table], qry)
 			lat = qry
 		}
 	}
