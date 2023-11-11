@@ -1,8 +1,8 @@
 package endpoint
 
 /*import (
-	"biacibenga.com/lib/go/bialib/dbcassandra"
-	"biacibenga.com/lib/go/bialib/domain"
+	"github/biangacila/bialib/dbcassandra"
+	"github/biangacila/bialib/domain"
 	"net/http"
 )
 

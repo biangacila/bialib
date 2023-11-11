@@ -130,12 +130,21 @@ func TestServiceGeneric_Update(t *testing.T) {
 	//[{"Username":"peterd@marginmentor.co.za","Name":"John","Surname":"Doe","Code":"","Email":"peterd@marginmentor.co.za","Org":"","Phone":"0720882572"}]
 	//
 	session := getSession("pmis.easipath.com")
-	dbName := "pmis"
+	dbName := "fleetminder2"
 	table := "user"
 	appName := "pmis"
 	org := ""
-	conditions := map[string]interface{}{"AppName": "pmis", "Username": "peterd@marginmentor.co.za"}
-	values := map[string]interface{}{"Name": "Peter", "Surname": "Davids", "FullName": "Peter Davids"}
+	password := global.GetMd5("phd@1964")
+	username := "peterd@marginmentor.co.za"
+
+	conditions := map[string]interface{}{"Username": "biangacila@gmail.com"}
+	values := map[string]interface{}{"Password": password}
 	GenericDbUpdate(session, dbName, table, appName, org, []User{}, conditions, values)
 
+	loginString := fmt.Sprintf("update user set password='%v' where  username='%v'",
+		password, username)
+
+	fmt.Println(loginString)
 }
+
+//CREATE KEYSPACE eventsourcing WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'}  AND durable_writes = true;

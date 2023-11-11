@@ -8,7 +8,7 @@ import (
 
 func TestStartKafka(t *testing.T) {
 	fmt.Println("Okay...")
-	topic := "Biacibenga"
+	topic := "SaferSubscriptionService"
 	go StartKafka(topic)
 	fmt.Println("Kafka has been started.....")
 	time.Sleep(10 * time.Minute)

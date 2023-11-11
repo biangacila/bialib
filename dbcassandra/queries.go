@@ -7,6 +7,7 @@ import (
 	"github.com/gocql/gocql"
 	"github.com/pborman/uuid"
 	"log"
+	"strings"
 )
 
 type Where struct {
@@ -56,6 +57,17 @@ func RunQueryCass(session *gocql.Session, qry string, fack []string) (string, er
 func FetchEntityFromDbAll(session *gocql.Session, entity, dbName, appName string) []byte {
 	qry := fmt.Sprintf("select * from %v.%v where appname='%v'",
 		dbName, entity, appName)
+	if appName == "" {
+		qry = fmt.Sprintf("select * from %v.%v ",
+			dbName, entity)
+	}
+	res, _ := RunQueryCass2(session, qry)
+	return []byte(res)
+}
+func FetchEntityFromDbAllSpecificField(session *gocql.Session, entity, dbName, appName string, fields []string) []byte {
+	selectionField := buildFieldList(fields)
+	qry := fmt.Sprintf("select %v from %v.%v where appname='%v'",
+		selectionField, dbName, entity, appName)
 	if appName == "" {
 		qry = fmt.Sprintf("select * from %v.%v ",
 			dbName, entity)
@@ -229,4 +241,50 @@ func isValueEmpty(in interface{}) bool {
 		return true
 	}
 	return false
+}
+func buildFieldList(fields []string) string {
+	var line string
+	for _, item := range fields {
+		line += fmt.Sprintf("%v ,", item)
+	}
+	line = strings.Trim(line, ",")
+	return line
+}
+
+func SelectQueryWithFieldList(session *gocql.Session, dbName, table string, params []Where, fieldList []string) []byte {
+	qry := fmt.Sprintf("select * from %v.%v ", dbName, table)
+	if len(fieldList) > 0 {
+		fields := buildFieldList(fieldList)
+		qry = fmt.Sprintf("select %v from %v.%v ", fields, dbName, table)
+	}
+	if len(params) > 0 {
+		var x = 0
+		for _, row := range params {
+			if x == 0 {
+				innerQry := fmt.Sprintf("where %v='%v' ", row.Key, row.Val)
+				if row.Type != "string" {
+					innerQry = fmt.Sprintf("where %v=%v ", row.Key, row.Val)
+				}
+				qry = qry + innerQry
+			} else {
+				innerQry := fmt.Sprintf(" and %v='%v' ", row.Key, row.Val)
+				if row.Type != "string" {
+					innerQry = fmt.Sprintf(" and %v=%v ", row.Key, row.Val)
+				}
+				qry = qry + innerQry
+			}
+			x++
+		}
+	}
+	var ls []interface{}
+	fmt.Println("LIST-QUERY ):(--> ", qry)
+	res, _ := RunQueryCass2(session, qry+" ALLOW FILTERING")
+	err := json.Unmarshal([]byte(res), &ls)
+	str, err := json.Marshal(ls)
+	if err != nil {
+		fmt.Println("Error Unmarshal fetch data: ", err, qry)
+		/*do nothing*/
+	}
+
+	return str
 }
