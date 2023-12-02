@@ -1,4 +1,4 @@
-module github/biangacila/bialib
+module github.com/biangacila/bialib
 
 go 1.18
 

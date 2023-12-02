@@ -1,11 +1,11 @@
 package endpoint
 
 import (
+	"biacibenga.com/lib/go/bialib/dbcassandra"
 	"encoding/json"
 	"fmt"
 	"github.com/biangacila/luvungula-go/global"
 	"github.com/gocql/gocql"
-	"github/biangacila/bialib/dbcassandra"
 	"net/http"
 )
 

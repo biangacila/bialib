@@ -118,7 +118,6 @@ func FetchEntityDataFromDb(session *gocql.Session, dbName, table, appName, org s
 		qry = fmt.Sprintf("select * from %v.%v where appName='%v' and org='%v' ",
 			dbName, table, appName, org)
 	}
-
 	res, _ := RunQueryCass2(session, qry)
 	return res
 }
